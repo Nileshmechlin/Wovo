@@ -1,0 +1,71 @@
+import {BaseQueryFn, createApi} from '@reduxjs/toolkit/query/react';
+import axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
+
+import {getStorageToken} from '../../utils/utils';
+
+// Type for the args that will be passed to axios (base query arguments)
+interface BaseQueryArgs extends AxiosRequestConfig {
+  url: string;
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+  body?: any;
+  headers?: Record<string, string>;
+}
+
+const baseQueryWithRath: BaseQueryFn<BaseQueryArgs, unknown, unknown> = async (
+  args,
+  api,
+  extraOptions,
+) => {
+  const token = getStorageToken();
+
+  try {
+    const result: AxiosResponse = await axios({
+      baseURL: 'http://192.168.11.160:7000/api/',
+      ...args,
+      url: args.url,
+      method: args.method,
+      data: args.body,
+      headers: {
+        ...args.headers,
+        Authorization: token ? `Bearer ${token}` : '',
+      },
+    });
+
+    // Check if response data is a string and malformed
+    if (typeof result?.data === 'string') {
+      if (!result.data.endsWith('}')) {
+        const withCurly = (result.data += '}');
+        return {data: JSON.parse(withCurly)};
+      }
+    }
+
+    return {data: result.data};
+  } catch (error: any) {
+    return {
+      error: {
+        status: error.response?.status || 500,
+        data: error.message || 'Something went wrong',
+      },
+    };
+  }
+};
+
+// Define the `createApi` with appropriate types
+export const api = createApi({
+  reducerPath: 'api',
+  baseQuery: baseQueryWithRath,
+  endpoints: () => ({}),
+  tagTypes: [
+    'user',
+    'message',
+    'group',
+    'news_feed',
+    'facedown',
+    'friend',
+    'shop',
+    'product',
+    'payment',
+  ],
+});
+
+export const imageUrl = 'http://192.168.11.160:7000/';
