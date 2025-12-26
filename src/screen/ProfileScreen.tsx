@@ -27,7 +27,7 @@ import {
 import NormalModal from '../components/modals/NormalModal';
 import {NavigProps} from '../interfaces/NaviProps';
 import {usePostLogoutMutation} from '../redux/apiSlices/authSlice';
-import {getStorageToken, removeStorageToken} from '../utils/utils';
+import {getStorageToken, removeStorageToken, makeImage} from '../utils/utils';
 import {useGetUserQuery} from '../redux/apiSlices/userSlice';
 import {cross} from '../helper/exportedFunction';
 
@@ -131,7 +131,13 @@ const ProfileScreen = ({navigation}) => {
           <View
             style={tw`w-30 h-30 rounded-full overflow-hidden mx-auto justify-center items-center`}>
             <Image
-              source={{uri: imageUri?.length ? imageUri : data?.data?.avatar}}
+              source={{
+                uri: imageUri?.length
+                  ? imageUri
+                  : data?.data?.avatar
+                  ? makeImage(data.data.avatar)
+                  : undefined,
+              }}
               style={tw`w-full h-full`}
             />
           </View>

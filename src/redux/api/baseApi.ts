@@ -22,7 +22,8 @@ const baseQueryWithRath: BaseQueryFn<BaseQueryArgs, unknown, unknown> = async (
   try {
     const result: AxiosResponse = await axios({
       // baseURL: 'http://192.168.12.140:8000/api',
-      baseURL: 'http://10.0.2.2:8000/api',
+      // baseURL: 'http://10.0.2.2:8000/api',
+      baseURL: 'https://api.wovo.love/api', // If this doesn't work, try: 'https://api.wovo.love' (without /api)
       ...args,
       url: args.url,
       method: args.method,
@@ -47,11 +48,32 @@ const baseQueryWithRath: BaseQueryFn<BaseQueryArgs, unknown, unknown> = async (
 
     return {data: result?.data};
   } catch (error: any) {
+    // Log error for debugging (only in development, and only for unexpected errors)
+    // Don't log expected errors like 404 as console.error to avoid React Native error overlay
+    if (__DEV__ && error.response?.status >= 500) {
+      console.warn('API Error:', {
+        message: error.message,
+        url: error.config?.url,
+        baseURL: error.config?.baseURL,
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data,
+      });
+    }
+
     if (error.response?.data) {
       if (typeof error.response?.data === 'string') {
-        const withCurly = (error.response.data += '}');
-
-        return {error: JSON.parse(withCurly)};
+        try {
+          const withCurly = (error.response.data += '}');
+          return {error: JSON.parse(withCurly)};
+        } catch (parseError) {
+          return {
+            error: {
+              status: error.response?.status || 500,
+              data: error.response?.data || 'Something went wrong',
+            },
+          };
+        }
       } else {
         return {error: error.response?.data};
       }
@@ -88,4 +110,5 @@ export const api = createApi({
 });
 
 // export const imageUrl = 'http://192.168.12.160:7000/';
-export const imageUrl = 'http://10.0.2.2:8000';
+// export const imageUrl = 'http://10.0.2.2:8000';
+export const imageUrl = 'https://api.wovo.love';

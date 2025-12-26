@@ -17,6 +17,7 @@ import TButton from '../components/buttons/TButton';
 import {ScrollView, TouchableOpacity} from 'react-native-gesture-handler';
 import {Avatar} from 'react-native-ui-lib';
 import { useGetContactQuery, useGetMatchQuery} from '../redux/apiSlices/chatSlice';
+import {makeImage} from '../utils/utils';
 
 type ItemData = {
   id: string;
@@ -164,7 +165,7 @@ const {data:contactData} = useGetContactQuery({});
                <View style={tw` h-18 w-18 mr-2 overflow-hidden`}>
                  <Image
                    style={tw`w-18 h-18 rounded-full`}
-                   source={{uri: item?.avatar}}
+                   source={{uri: item?.avatar ? makeImage(item.avatar) : undefined}}
                  />
                </View>
              </TouchableOpacity>
@@ -187,7 +188,7 @@ const {data:contactData} = useGetContactQuery({});
                 {/* Avatar */}
                 {item?.avatar && (
                   <Avatar
-                    source={{uri: item?.avatar}}
+                    source={{uri: makeImage(item.avatar)}}
                     size={50}
                     containerStyle={tw`mr-4`}
                   />

@@ -1,5 +1,6 @@
 import React from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {makeImage} from '../../utils/utils';
 
 type ProfileComponentProps = {
   outLineColor: string;
@@ -20,7 +21,7 @@ const Profile: React.FC<ProfileComponentProps> = ({
         <View style={[styles.imageContainer, {borderColor: outLineColor}]}>
           <Image
             source={
-              imageUrl ? {uri: imageUrl} : require('../assets/images/binary.png')
+              imageUrl ? {uri: makeImage(imageUrl) || undefined} : require('../assets/images/binary.png')
             }
             style={styles.profileImage}
           />

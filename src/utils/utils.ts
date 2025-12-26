@@ -14,8 +14,9 @@ export const Android = Platform.OS === 'android';
 
 export const Ios = Platform.OS === 'ios';
 
-export const makeImage = (url: string) => {
-  return url.startsWith('https') ? url : imageUrl + url;
+export const makeImage = (url: string | null | undefined) => {
+  if (!url) return undefined;
+  return url.startsWith('https') || url.startsWith('http') ? url : imageUrl + url;
 };
 export const makeImageUrl = (url: string) => {
   return imageUrl + url;
